@@ -64,18 +64,6 @@ def splitByLineCount(filename,count):
     finally:
         fin.close()
 
-def getOutFiles(filenames, srcPrefix):
-        for item in filenames:
-            loc = item.find(srcPrefix)
-            if loc == -1:
-                filenames.remove(item)
-                #filenames.pop()
-                print('removed item: ' + item)
-            else:
-                print(loc)
-
-        return filenames
-
 ##############################################################333
 if __name__ == '__main__':
     begin = time.time()
@@ -101,6 +89,7 @@ if __name__ == '__main__':
         count=getNumOfLines(srcfile4,numFiles)
         splitByLineCount(srcfile4,count)
 
+#生成した４種類の中間ファイルを配列に
     srcfiles=os.listdir(srcPath)
     #a = [v for v in a if not str(v).isdigit()]
     srcfiles1 = [item for item in srcfiles if not item.find(srcPrefix1)]
