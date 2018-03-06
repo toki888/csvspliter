@@ -8,10 +8,10 @@ numFiles = 60               # 分割ファイル数
 ###############################################
 # Source Files and Path
 srcPath = "C:\Temp\P17-0052\\"
-srcfile1 = 'C:\Temp\P17-0052\\resv_per_pol_TS.csv'
-srcfile2 = 'C:\Temp\P17-0052\\resv_per_pol_Oth2.csv'
-srcfile3 = 'C:\Temp\P17-0052\\resv_per_pol_Oth1.csv'
-srcfile4 = 'C:\Temp\P17-0052\\resv_per_pol_C10.csv'
+srcfile1 = srcPath + 'resv_per_pol_TS.csv'
+srcfile2 = srcPath + 'resv_per_pol_Oth2.csv'
+srcfile3 = srcPath + 'resv_per_pol_Oth1.csv'
+srcfile4 = srcPath + 'resv_per_pol_C10.csv'
 outputPath = "C:\Temp\P17-0052\out\\"
 
 ###############################################
@@ -60,32 +60,31 @@ def splitByLineCount(filename,count):
                 sub = mkSubFile(buf,head,filename,sub)
                 buf = []
         if len(buf) != 0:
-            sub = mkSubFile(buf,head,filename,sub)   
+            sub = mkSubFile(buf,head,filename,sub)
     finally:
         fin.close()
 
-##############################################################333
+##############################################################
+# Main Program
+#
 if __name__ == '__main__':
     begin = time.time()
 
-    if(0>1):
+    #Get number of lines for each input file and split it into <numFiles> temp files.
+    if(0<1):
         #File1:     resv_per_pol_TS
-        #
         count=getNumOfLines(srcfile1,numFiles)
         splitByLineCount(srcfile1,count)
 
         #File2:     resv_per_pol_Oth2
-        #
         count=getNumOfLines(srcfile2,numFiles)
         splitByLineCount(srcfile2,count)
 
         #File3:     resv_per_pol_Oth1
-        #
         count=getNumOfLines(srcfile3,numFiles)
         splitByLineCount(srcfile3,count)
 
         #File4:     resv_per_pol_C10
-        #
         count=getNumOfLines(srcfile4,numFiles)
         splitByLineCount(srcfile4,count)
 
@@ -98,15 +97,18 @@ if __name__ == '__main__':
     srcfiles4 = [item for item in srcfiles if not item.find(srcPrefix4)]
 
     #Output total 60 files to subfolder - out
-    numOutput = 1
+    part1=0; part2=0; numOutput = 0
     for item1, item2, item3, item4 in zip(srcfiles1, srcfiles2,srcfiles3,srcfiles4):
         item1 = srcPath + item1
         item2 = srcPath + item2
         item3 = srcPath + item3
         item4 = srcPath + item4
-        outputfile = outputPath + outputPrefix + str("{0:02d}".format(numOutput)) + outputSuffix
+        part1,part2 = divmod(numOutput,15)
+        outputfile = outputPath + outputPrefix + str("{0:02d}".format(part1+1)) + '_' + str("{0:02d}".format(part2+1)) + outputSuffix
         cmdCopy = 'copy/b ' + item1 + ' + ' + item2 + ' + ' + item3 + ' + ' + item4 + ' ' + outputfile
         os.system(cmdCopy)
+        #print (cmdCopy)
+        #print(part1+1, part2+1)
         numOutput += 1
 
     end = time.time()
