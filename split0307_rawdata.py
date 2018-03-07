@@ -10,7 +10,8 @@ numFiles = 1               # 分割ファイル数
 ###############################################
 # Source Files and Path
 srcPath = "C:\Temp\P17-0052-1\\"
-srcfile = srcPath + 'allinone.csv'
+srcfile = srcPath + 'allinone_origin.csv'
+srcfile_uni = srcPath + 'allinone.csv'
 srcfile1 = srcPath + 'resv_per_pol_TS.csv'
 srcfile2 = srcPath + 'resv_per_pol_Oth2.csv'
 srcfile3 = srcPath + 'resv_per_pol_Oth1.csv'
@@ -34,10 +35,13 @@ outputSuffix = '.csv'
 if __name__ == '__main__':
     begin = time.time()
 
-    #Remove duplicates from allinone.csv file
-    #count = getUnifiedFile("C:\Temp\P17-0052-1\\allinone.csv")
+    num_orginlines = sum(1 for line in open(srcfile,'r'))
+    print("The total number of origin file with duplicate. %d" % num_orginlines)
 
-    count1 = myfun.splitOneFile(srcfile)
+    #Remove duplicates from allinone.csv file
+    myfun.removedup(srcfile, srcfile_uni)
+
+    count1 = myfun.splitOneFile(srcfile_uni)
     print("Total number is %d" % count1)
 
     end = time.time()

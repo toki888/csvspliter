@@ -1,9 +1,33 @@
 # -*- coding: utf8 -*-
 import os
 import time
+from random import shuffle
+import itertools
 
 #################################################
 # This module contains all subroutines and functions called from split0307_rawdata.py
+
+## This sub is used to remove duplicate lines from input file and save to output file
+def removedup(fin, fout):
+    input = open(fin, 'rb')
+    output = open(fout, 'wb')
+    for key,  group in itertools.groupby(sorted(input)):
+        output.write(key)
+    input.close()
+    output.close()
+
+## Not use now.
+def mkSubFile(lines,head,srcName,sub):
+    [des_filename, extname] = os.path.splitext(srcName)
+    filename  = des_filename + '_' + str("{0:02d}".format(sub)) + extname
+    #print( 'make file: %s' %filename)
+    fout = open(filename,'w')
+    try:
+#        fout.writelines([head])
+        fout.writelines(lines)
+        return sub + 1
+    finally:
+        fout.close()
 
 #One File Version
 def mkOneSubFile(lines,head,srcName,sub, part1, part2):
@@ -18,26 +42,10 @@ def mkOneSubFile(lines,head,srcName,sub, part1, part2):
     finally:
         fout.close()
 
-def mkSubFile(lines,head,srcName,sub):
-    [des_filename, extname] = os.path.splitext(srcName)
-    filename  = des_filename + '_' + str("{0:02d}".format(sub)) + extname
-    #print( 'make file: %s' %filename)
-    fout = open(filename,'w')
-    try:
-#        fout.writelines([head])
-        fout.writelines(lines)
-        return sub + 1
-    finally:
-        fout.close()
-
-def getNumOfLines(filename, num):
-    num_lines = sum(1 for line in open(filename,'r'))
-    num_perfile = round(num_lines/num)+1    #無条件＋１
-    #print('total number of lines is ' % num_lines)
-    return num_perfile
-
-#split file into 60 sub files having ratio as 1:3:3:3  - OneFile Version
+##Main subroutine for this py file, １つの Input file を60個（1:3:3:3)で分割する
+##split file into 60 sub files having ratio as 1:3:3:3  - OneFile Version
 def splitOneFile (filename):
+
     #Get the number of lines of input file
     num_lines = sum(1 for line in open(filename,'r'))
 
@@ -53,14 +61,18 @@ def splitOneFile (filename):
         unit.append(num_unit)
 
         #16個目から３倍する
-        if i==14:
+        if i == 14:
             num_unit = num_unit * 3
         else:
             pass
 
         print(i, unit[i],)
 
-    fin = open(filename,'r')
+    #fin = open(filename,'r')
+    with open("C:\Temp\P17-0052-1\\allinone.csv") as f:
+        fin = f.readlines()
+    shuffle(fin)        ###shuffle fin
+
     try:
     #    head = fin.readline()
         head = ""
@@ -79,7 +91,8 @@ def splitOneFile (filename):
             part1,part2 = divmod(i,15)
             sub = mkOneSubFile(buf,head,filename,sub, part1, part2)
     finally:
-        fin.close()
+        #fin.close()
+        pass
 
     return num_lines
 
@@ -108,12 +121,6 @@ def splitSourceFile (filename):
 
         print(i, unit[i],)
 
-#    summ = 0
-#    for i in range(0,60):
-#        summ += unit[i]
-#
-#    print ("sum is %d:" % summ)
-
     fin = open(filename,'r')
     try:
     #    head = fin.readline()
@@ -132,11 +139,11 @@ def splitSourceFile (filename):
     finally:
         fin.close()
 
-
+#指定した行数によって、ファイルを分割する
+#更にmkSubFile（）を呼ぶ
 def splitByLineCount(filename,count):
     fin = open(filename,'r')
     try:
-    #    head = fin.readline()
         head = ""
         buf = []
         sub = 1
@@ -150,18 +157,8 @@ def splitByLineCount(filename,count):
     finally:
         fin.close()
 
-#重複契約を削除する
-def getUnifiedFile (filename):
-    fin = open(filename, 'r')
-    try:
-        head = ""
-        buf = []
-        sub = 1
-        for line in fin :
-            if line not in buf:
-                buf.append(line)
-                sub += 1
-
-        print("total records are %d" % sub)
-    finally:
-        fin.close()
+#Return the number of lines of a given file
+def getNumOfLines(filename, num):
+    num_lines = sum(1 for line in open(filename,'r'))
+    num_perfile = round(num_lines/num)+1    #無条件＋１
+    return num_perfile
